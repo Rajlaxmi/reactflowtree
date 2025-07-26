@@ -152,6 +152,7 @@ function App() {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [focusedNode, setFocusedNode] = useState(null);
 
   // Load graph data from YAML file
   useEffect(() => {
@@ -207,6 +208,28 @@ function App() {
     [],
   );
 
+  const onNodeClick = useCallback((event, node) => {
+    setFocusedNode(node);
+  }, []);
+
+  const closeFocusMode = useCallback(() => {
+    setFocusedNode(null);
+  }, []);
+
+  // Handle escape key to close focus mode
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && focusedNode) {
+        closeFocusMode();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [focusedNode, closeFocusMode]);
+
   if (loading) {
     return (
       <div style={{ 
@@ -245,6 +268,7 @@ function App() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onNodeClick={onNodeClick}
         defaultViewport={{ x: 200, y: 70, zoom: 0.8 }}
         style={{ backgroundColor: '#1a1a1a' }}
       >
@@ -256,6 +280,89 @@ function App() {
         />
         <Controls style={{ backgroundColor: '#2a2a2a', border: '1px solid #444' }} />
       </ReactFlow>
+      
+      {/* Focus Mode Modal */}
+      {focusedNode && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.85)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '40px'
+          }}
+          onClick={closeFocusMode}
+        >
+          <div 
+            style={{
+              backgroundColor: '#1c1b1a',
+              border: '1px solid #374151',
+              borderRadius: '16px',
+              maxWidth: '500px',
+              width: '90%',
+              maxHeight: '80vh',
+              overflow: 'auto',
+              padding: '40px',
+              color: '#f9fafb',
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeFocusMode}
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: 'none',
+                border: 'none',
+                color: '#9ca3af',
+                fontSize: '24px',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '8px',
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.color = '#f9fafb'}
+              onMouseLeave={(e) => e.target.style.color = '#9ca3af'}
+            >
+              ×
+            </button>
+            
+            {/* Node content */}
+            <div style={{ paddingRight: '40px' }}>
+              <ReactMarkdown 
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: ({ children }) => <p style={{ margin: '0 0 20px 0', fontSize: '16px', lineHeight: '1.7' }}>{children}</p>,
+                  h1: ({ children }) => <h1 style={{ fontSize: '28px', margin: '0 0 24px 0', fontWeight: '600', color: '#f9fafb' }}>{children}</h1>,
+                  h2: ({ children }) => <h2 style={{ fontSize: '24px', margin: '0 0 20px 0', fontWeight: '600', color: '#f9fafb' }}>{children}</h2>,
+                  h3: ({ children }) => <h3 style={{ fontSize: '20px', margin: '0 0 16px 0', fontWeight: '600', color: '#f9fafb' }}>{children}</h3>,
+                  h4: ({ children }) => <h4 style={{ fontSize: '18px', margin: '0 0 12px 0', fontWeight: '600', color: '#f9fafb' }}>{children}</h4>,
+                  ul: ({ children }) => <ul style={{ margin: '0 0 20px 0', paddingLeft: '24px', listStyle: 'disc' }}>{children}</ul>,
+                  ol: ({ children }) => <ol style={{ margin: '0 0 20px 0', paddingLeft: '24px', listStyle: 'decimal' }}>{children}</ol>,
+                  li: ({ children }) => <li style={{ margin: '0 0 8px 0', lineHeight: '1.7' }}>{children}</li>,
+                  strong: ({ children }) => <strong style={{ fontWeight: '600', color: '#f9fafb' }}>{children}</strong>,
+                  em: ({ children }) => <em style={{ fontStyle: 'italic', color: '#d1d5db' }}>{children}</em>,
+                  code: ({ children }) => <code style={{ backgroundColor: '#374151', padding: '4px 8px', borderRadius: '6px', fontSize: '15px' }}>{children}</code>,
+                  blockquote: ({ children }) => <blockquote style={{ borderLeft: '4px solid #374151', paddingLeft: '16px', margin: '0 0 20px 0', fontStyle: 'italic', color: '#d1d5db' }}>{children}</blockquote>,
+                }}
+              >
+                {focusedNode.data.label}
+              </ReactMarkdown>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
