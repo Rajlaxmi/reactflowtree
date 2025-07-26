@@ -1,0 +1,48 @@
+nodes:
+  - id: "root"
+    label: "### Manic by Benjamin Labatut
+
+The book explores several key themes, including:
+
+- The nature of scientific genius and its potential dark side. \n
+- The ethical implications of scientific discovery. \n
+- The psychological toll of obsessive pursuit of knowledge.  \n
+- The relationship between science and madness. \n
+- The subjective nature of truth and reality. \n
+- Style and Structure \n
+\n
+Labatut masterfully weaves together historical accounts with fictionalized elements, creating a narrative that is both informative and captivating. The book's structure is non-linear, jumping between different scientists' stories and time periods, adding to its overall enigmatic quality."
+    
+  - id: "notable_examples"
+    label: "### Notable Examples
+<br/>
+
+- **Alexander Grothendieck**: Revolutionary mathematical genius who struggled with abstract intellectual development and personal challenges
+
+- **Werner Heisenberg**: Crucial role in quantum mechanics development, faced ethical dilemmas during World War II, exemplifying the complex relationship between scientific achievement and moral responsibility
+
+- **Other Scientists**: Share similar patterns of pursuing knowledge while navigating ethical considerations throughout their careers"
+    
+  - id: "key_theories"
+    label: "### Key Theories Explored
+
+- **Scientific Genius & Dark Side**: Exploration of how exceptional intellectual ability can lead to personal and moral complications
+
+- **Ethical Implications**: The moral responsibilities and consequences that come with groundbreaking scientific discoveries
+
+- **Psychological Toll**: The mental and emotional cost of obsessive pursuit of knowledge and truth
+
+- **Science & Morality**: The complex relationship between scientific advancement and ethical considerations
+
+- **Subjective Reality**: How individual perception shapes our understanding of truth and scientific reality"
+
+
+edges:
+  - id: "root-notable"
+    source: "root"
+    target: "notable_examples"
+    
+  - id: "root-theories"
+    source: "root"
+    target: "key_theories"
+    
